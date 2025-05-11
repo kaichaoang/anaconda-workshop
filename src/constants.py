@@ -58,16 +58,16 @@ columns_to_include = [
 equity_type = "Equities"
 bond_type = "Government Bond"
 
-resources_folder = './resources/'
+resources_folder = './src/resources/'
 
 master_data_sql_filename = 'master-reference-sql.sql'
-db_path = './resources/master-data.db'
+db_path = './src/resources/master-data.db'
 
-external_funds_zip_path = './resources/external-funds.zip'
-external_funds_folder = './resources/external-funds/'
+external_funds_zip_path = './src/resources/external-funds.zip'
+external_funds_folder = './src/resources/external-funds/'
 
 raw_external_funds_table = 'raw_external_funds'
 
-report_folder = './output/'
+report_folder = './src/output/'
 recon_report_filename = 'recon_report.csv'
 ror_report_filename = 'ror_report.csv'

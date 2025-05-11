@@ -53,7 +53,7 @@ def test_all_columns_present(df, enrichment, columns, expected_output):
             "FINANCIAL TYPE",
             "SYMBOL",
             "SECURITY NAME",
-            "SEDOL",  # Missing in DataFrame
+            "SEDOL",
             "ISIN",
             "PRICE",
             "QUANTITY",
@@ -103,12 +103,12 @@ def test_empty_dataframe(df, enrichment, columns, expected_output):
     (
         pd.DataFrame({
             "FINANCIAL TYPE": ["Type1"],
-            "SYMBOL": [None],  # NaN value
+            "SYMBOL": [None],
             "SECURITY NAME": ["Security1"],
             "SEDOL": ["SEDOL1"],
-            "ISIN": [None],  # NaN value
+            "ISIN": [None],
             "PRICE": [100.0],
-            "QUANTITY": [None],  # NaN value
+            "QUANTITY": [None],
             "REALISED P/L": [5.0],
             "MARKET VALUE": [1000.0]
         }),
@@ -185,7 +185,6 @@ def test_multiple_rows(df, enrichment, columns, expected_output):
     assert result == expected_output
 
 @pytest.mark.parametrize("df, enrichment, columns, expected_output", [
-    # Test case with different enrichment values
     (
         pd.DataFrame({
             "FINANCIAL TYPE": ["Type1"],

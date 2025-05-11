@@ -10,11 +10,11 @@ def get_mock_data_applebead() -> pd.DataFrame:
         "SEDOL": [None, "BYYNK79", None],
         "ISIN": [None, None, None],
         "PRICE": [73.6, 100.85, np.nan],
-        "QUANTITY": [174928.1628875706, 5236681.464162043, np.nan],
-        "REALISED P/L": [82343.05125738333, -8411.49517383557, np.nan],
-        "MARKET VALUE": [12874712.788525194, 528119325.66074204, 198971692.2443514],
+        "QUANTITY": [100, 100, np.nan],
+        "REALISED P/L": [5000.0, 2000.0, np.nan],
+        "MARKET VALUE": [50000.0, 20000, 0.0],
         "FUND NAME": ["Applebead", "Applebead", "Applebead"],
-        "REPORTING DATE": ["2023-10-01", "2023-10-01", "2023-10-01"],
+        "REPORTING DATE": ["2023-10-31", "2023-10-31", "2023-10-31"],
     })
 
 def get_mock_data_belaware() -> pd.DataFrame:
@@ -25,11 +25,11 @@ def get_mock_data_belaware() -> pd.DataFrame:
         "SEDOL": [None, "BYYNK80", None],
         "ISIN": [None, None, None],
         "PRICE": [50.0, 102.5, np.nan],
-        "QUANTITY": [10000, 2000000, np.nan],
-        "REALISED P/L": [5000.0, 2000.0, np.nan],
-        "MARKET VALUE": [500000.0, 205000000.0, 0.0],
+        "QUANTITY": [100, 100, np.nan],
+        "REALISED P/L": [4000.0, 2100.0, np.nan],
+        "MARKET VALUE": [40000.0, 21000, 0.0],
         "FUND NAME": ["Belaware", "Belaware", "Belaware"],
-        "REPORTING DATE": ["2023-10-01", "2023-10-01", "2023-10-01"],
+        "REPORTING DATE": ["2023-10-31", "2023-10-31", "2023-10-31"],
     })
 
 def get_mock_master_sql() -> str:
@@ -72,18 +72,18 @@ def get_mock_master_sql() -> str:
     ('JAPAN (10 YEAR ISSUE) 0.1 % 12/20/2026 ','JP1103451GC0','BYYNK79','JP',0.1,'20/12/2026','Levery 6 month','Treasury','USD'),
     ('JAPAN (5 YEAR ISSUE) 0.5 % 12/20/2025 ','JP1234567AB','BYYNK80','JP',0.1,'20/12/2026','Levery 6 month','Treasury','USD');
     INSERT INTO "bond_prices" ("DATETIME","ISIN","PRICE") VALUES
-    ('2023-10-01','JP1103451GC0',100.70),
-    ('2023-10-15','JP1103451GC0',100.85),
-    ('2023-10-01','JP1234567AB',102.5),
-    ('2023-10-15','JP1234567AB',103.0);
+    ('2023-10-02','JP1103451GC0',100.70),
+    ('2023-10-30','JP1103451GC0',100.85),
+    ('2023-10-02','JP1234567AB',102.5),
+    ('2023-10-30','JP1234567AB',103.0);
     INSERT INTO "equity_reference" ("SYMBOL","COUNTRY","SECURITY NAME","SECTOR","INDUSTRY","CURRENCY") VALUES
     ('SYY','US','Sysco','Consumer Staples','Food Distributors','USD'),
     ('XYZ','US','Company XYZ','Consumer Staples','Food Distributors','USD');
     INSERT INTO "equity_prices" ("DATETIME","SYMBOL","PRICE") VALUES
-    ('10/1/2023','SYY',73.6),
-    ('10/15/2023','SYY',75.6),
-    ('10/1/2023','XYZ',51.1),
-    ('10/15/2023','XYZ',52.2);
+    ('10/2/2023','SYY',73.6),
+    ('10/30/2023','SYY',75.6),
+    ('10/2/2023','XYZ',51.1),
+    ('10/30/2023','XYZ',50.0);
     COMMIT;
     """
     return query

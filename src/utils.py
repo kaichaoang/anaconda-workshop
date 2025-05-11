@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
@@ -65,5 +66,5 @@ def generate_values_for_insertion_from_df(df: pd.DataFrame, enrichment: Dict[str
 def get_best_performing_funds(df):
     best_performing_indices = df.groupby('REPORTING DATE')['ROR'].idxmax()
     best_performing_funds = df.loc[best_performing_indices]
-    print("Successfully got the best performing funds")
+    logging.info("Successfully got the best performing funds")
     return best_performing_funds

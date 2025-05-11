@@ -17,12 +17,12 @@ def setup_test_environment():
 
     # Setup mock Applebead data
     mock_data_applebead_df = get_mock_data_applebead()
-    mock_csv_path_applebead = os.path.join(ingest_dir.name, 'Applebead.01-10-2023.csv')
+    mock_csv_path_applebead = os.path.join(ingest_dir.name, 'Applebead.31-10-2023.csv')
     mock_data_applebead_df.to_csv(mock_csv_path_applebead, index=False)
 
     # Setup mock Belaware data
     mock_data_belaware_df = get_mock_data_belaware()
-    mock_csv_path_belaware = os.path.join(ingest_dir.name, 'Belaware.01_10_2023.csv')
+    mock_csv_path_belaware = os.path.join(ingest_dir.name, 'Belaware.31_10_2023.csv')
     mock_data_belaware_df.to_csv(mock_csv_path_belaware, index=False)
 
     # Setup mock fund data ingestion

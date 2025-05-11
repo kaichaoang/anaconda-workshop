@@ -41,6 +41,3 @@ class TestSQLiteDatabase(unittest.TestCase):
 
     def tearDown(self):
         self.db.close_conn()
-
-if __name__ == '__main__':
-    unittest.main()

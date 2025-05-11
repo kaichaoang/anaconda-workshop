@@ -31,4 +31,3 @@ class SQLiteDatabase:
         if self.conn:
             self.conn.close()
             self.conn = None
-

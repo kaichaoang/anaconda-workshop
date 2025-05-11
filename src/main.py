@@ -1,9 +1,11 @@
-import src.constants as const
-from src.ingestion import bulk_ingest
-from src.services import generate_recon_report, generate_ror_report
+from src.constants import db_path, external_funds_folder
+from src.dispatcher import run_tasks
 from src.setup import init
 
-db = init(external_funds_folder=const.external_funds_folder, db_path=const.db_path)
-bulk_ingest(db=db, source_folder=const.external_funds_folder, is_ingest=True)
-recon_df = generate_recon_report(db=db, output_folder=const.report_folder)
-ror_df = generate_ror_report(db=db, output_folder=const.report_folder)
+
+def main():
+    db = init(external_funds_folder=external_funds_folder, db_path=db_path)
+    run_tasks(db)
+
+if __name__ == "__main__":
+    main()

@@ -1,3 +1,4 @@
+import logging
 import os
 
 import src.constants as const
@@ -11,24 +12,23 @@ from src.utils import (
 )
 
 
-def bulk_ingest(db: SQLiteDatabase, source_folder: str, is_ingest: bool) -> None:
-    if is_ingest:
-        db.execute_script(setup_ingestion_table_query())
+def bulk_ingest(db: SQLiteDatabase, source_folder: str) -> None:
+    db.execute_script(setup_ingestion_table_query())
 
-        for filename in os.listdir(source_folder):
-            filepath = os.path.join(source_folder, filename)
-            ingest(csv_filepath=filepath, filename=filename, db=db)
+    for filename in os.listdir(source_folder):
+        filepath = os.path.join(source_folder, filename)
+        ingest(csv_filepath=filepath, filename=filename, db=db)
 
 
 def ingest(csv_filepath: str, filename: str, db: SQLiteDatabase) -> None:
-    print(f"Ingesting: {filename}")
+    logging.info(f"Ingesting: {filename}")
 
     extracted_fund, extracted_date = extract_fund_and_date(filename)
-    print(f"Extracted fund: {extracted_fund} and extracted date: {extracted_date}")
+    logging.info(f"Extracted fund: {extracted_fund} and extracted date: {extracted_date}")
     is_recognised = extracted_fund is not None and extracted_date is not None
 
     if not is_recognised:
-        print(f"File {csv_filepath} is not recognised, skipping ingestion")
+        logging.warning(f"File {csv_filepath} is not recognised, skipping ingestion")
         return
 
     df = read_csv_to_df(csv_filepath)
@@ -42,6 +42,3 @@ def ingest(csv_filepath: str, filename: str, db: SQLiteDatabase) -> None:
     query = ingestion_query(values)
 
     db.execute_script(query)
-
-
-

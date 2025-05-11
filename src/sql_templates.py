@@ -22,7 +22,7 @@ def setup_ingestion_table_query() -> str:
     """
     return query
 
-def ingestion_query(values) -> str:
+def ingestion_query(values: str) -> str:
     query = f"""
         BEGIN TRANSACTION;
         INSERT INTO "{const.raw_external_funds_table}" (
@@ -42,7 +42,7 @@ def ingestion_query(values) -> str:
     """
     return query
 
-def get_equity_price_with_nearest_date_query(date):
+def get_equity_price_with_nearest_date_query(date: str) -> str:
     query = f"""
         WITH formatted_dates_equity_ref_prices AS (
             SELECT 
@@ -221,7 +221,15 @@ def get_distinct_fund_name_and_reporting_date_query() -> str:
 
     return query
 
-def get_equities_date_start_subquery(reporting_date:str):
+def get_distinct_reporting_date_query() -> str:
+    query = f"""
+        SELECT DISTINCT "REPORTING DATE" from {const.raw_external_funds_table}
+        ORDER BY "REPORTING DATE" ASC
+    """
+
+    return query
+
+def get_equities_date_start_subquery(reporting_date: str, asc: bool) -> str:
     query = f"""
          SELECT printf('%04d-%02d-%02d',
                     CAST(SUBSTR(ep.DATETIME, INSTR(ep.DATETIME, '/') + INSTR(SUBSTR(ep.DATETIME, INSTR(ep.DATETIME, '/') + 1), '/') + 1) AS INTEGER),  -- Year
@@ -233,25 +241,25 @@ def get_equities_date_start_subquery(reporting_date:str):
          WHERE SYMBOL = raw_ef.SYMBOL
          AND strftime('%Y', FORMATTED_DATE) = strftime('%Y', '{reporting_date}') 
          AND strftime('%m', FORMATTED_DATE) = strftime('%m', '{reporting_date}') 
-         ORDER BY FORMATTED_DATE ASC 
+         ORDER BY FORMATTED_DATE {'ASC' if asc else 'DESC'} 
          LIMIT 1
     """
     return query
 
-def get_bonds_date_start_subquery(reporting_date:str):
+def get_bonds_date_start_subquery(reporting_date: str, asc: bool) -> str:
     query = f"""
          SELECT DATETIME, PRICE
          FROM bond_prices as bp
          WHERE ISIN = raw_ef.SYMBOL
          AND strftime('%Y', DATETIME) = strftime('%Y', '{reporting_date}') 
          AND strftime('%m', DATETIME) = strftime('%m', '{reporting_date}') 
-         ORDER BY DATETIME ASC 
+         ORDER BY DATETIME {'ASC' if asc else 'DESC'} 
          LIMIT 1
 
     """
     return query
 
-def get_rate_of_return_query(fund_name: str, reporting_date: str):
+def get_rate_of_return_query(reporting_date: str) -> str:
     query = f"""
         WITH fund_report_data AS (
             SELECT
@@ -261,29 +269,39 @@ def get_rate_of_return_query(fund_name: str, reporting_date: str):
                 raw_ef."QUANTITY",
                 raw_ef."REPORTING DATE",
                 raw_ef."REALISED P/L",
-                raw_ef."MARKET VALUE" AS "END MARKET VALUE",
                 CASE 
-                    WHEN raw_ef."FINANCIAL TYPE" = 'Equities' THEN (SELECT PRICE FROM ({get_equities_date_start_subquery(reporting_date)}))
-                    WHEN raw_ef."FINANCIAL TYPE" = 'Government Bond' THEN (SELECT PRICE FROM ({get_bonds_date_start_subquery(reporting_date)}))
+                    WHEN raw_ef."FINANCIAL TYPE" = 'Equities' THEN (SELECT PRICE FROM ({get_equities_date_start_subquery(reporting_date, asc=True)}))
+                    WHEN raw_ef."FINANCIAL TYPE" = 'Government Bond' THEN (SELECT PRICE FROM ({get_bonds_date_start_subquery(reporting_date, asc=True)}))
                     WHEN raw_ef."FINANCIAL TYPE" = 'CASH' THEN NULL
                     ELSE NULL
                 END AS "START_VALUE",
                 CASE 
-                    WHEN raw_ef."FINANCIAL TYPE" = 'Equities' THEN (SELECT FORMATTED_DATE FROM ({get_equities_date_start_subquery(reporting_date)}))
-                    WHEN raw_ef."FINANCIAL TYPE" = 'Government Bond' THEN (SELECT DATETIME FROM ({get_bonds_date_start_subquery(reporting_date)}))
+                    WHEN raw_ef."FINANCIAL TYPE" = 'Equities' THEN (SELECT FORMATTED_DATE FROM ({get_equities_date_start_subquery(reporting_date, asc=True)}))
+                    WHEN raw_ef."FINANCIAL TYPE" = 'Government Bond' THEN (SELECT DATETIME FROM ({get_bonds_date_start_subquery(reporting_date, asc=True)}))
                     WHEN raw_ef."FINANCIAL TYPE" = 'CASH' THEN NULL
                     ELSE NULL
-                END AS "START_DATE"
+                END AS "START_DATE",
+                CASE 
+                    WHEN raw_ef."FINANCIAL TYPE" = 'Equities' THEN (SELECT PRICE FROM ({get_equities_date_start_subquery(reporting_date, asc=False)}))
+                    WHEN raw_ef."FINANCIAL TYPE" = 'Government Bond' THEN (SELECT PRICE FROM ({get_bonds_date_start_subquery(reporting_date, asc=False)}))
+                    WHEN raw_ef."FINANCIAL TYPE" = 'CASH' THEN NULL
+                    ELSE NULL
+                END AS "END_VALUE",
+                CASE 
+                    WHEN raw_ef."FINANCIAL TYPE" = 'Equities' THEN (SELECT FORMATTED_DATE FROM ({get_equities_date_start_subquery(reporting_date, asc=False)}))
+                    WHEN raw_ef."FINANCIAL TYPE" = 'Government Bond' THEN (SELECT DATETIME FROM ({get_bonds_date_start_subquery(reporting_date, asc=False)}))
+                    WHEN raw_ef."FINANCIAL TYPE" = 'CASH' THEN NULL
+                    ELSE NULL
+                END AS "END_DATE"
             FROM
                 {const.raw_external_funds_table} AS raw_ef
             WHERE 
-                raw_ef."FUND NAME" = '{fund_name}' AND
                 raw_ef."REPORTING DATE" = '{reporting_date}'
         ),
         fund_ror_data AS (
             SELECT 
                 "FUND NAME",
-                "END MARKET VALUE" AS "FUND MV END",
+                "QUANTITY" * "END_VALUE" AS "FUND MV END",
                 "QUANTITY" * "START_VALUE" AS "FUND MV START",
                 "REALISED P/L",
                 "REPORTING DATE"
@@ -294,6 +312,6 @@ def get_rate_of_return_query(fund_name: str, reporting_date: str):
             "REPORTING DATE",
             (SUM("FUND MV END") - SUM("FUND MV START") + SUM("REALISED P/L")) / NULLIF(SUM("FUND MV START"), 0) AS "ROR" 
         FROM fund_ror_data
+        GROUP BY "FUND NAME"
     """
     return query
-
