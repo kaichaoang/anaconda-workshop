@@ -39,8 +39,12 @@ poetry run pytest
    - Report generation services will run as per normal since it requires just the extracted fund name and reporting date.
 
 ### 💡 Assumptions for ROR
+1. Included Equities and Government Bond
+
+### 💡 Assumptions for ROR
 1. Assumed Fund MV start and Fund MV end is obtained by **quantity * reference_prices** from master data
-2. Ignored CASH
+2. Included Equities and Government Bond
+3. Ignored CASH
 
 ---
 
