@@ -23,17 +23,19 @@ class TestSQLiteDatabase(unittest.TestCase):
         query = "INSERT INTO test (name) VALUES ('Alice');"
         self.db.execute_script(query)
 
-        result_df = self.db.fetch_as_df("SELECT * FROM test;")
+        actual_df = self.db.fetch_as_df("SELECT * FROM test;")
         expected_df = pd.DataFrame({'id': [1], 'name': ['Alice']})
-        pd.testing.assert_frame_equal(result_df, expected_df)
+
+        pd.testing.assert_frame_equal(actual_df, expected_df)
 
     def test_fetch_as_df(self):
         insert_query = "INSERT INTO test (name) VALUES ('Alice'), ('Bob');"
         self.db.execute_script(insert_query)
 
-        result_df = self.db.fetch_as_df("SELECT * FROM test;")
+        actual_df = self.db.fetch_as_df("SELECT * FROM test;")
         expected_df = pd.DataFrame({'id': [1, 2], 'name': ['Alice', 'Bob']})
-        pd.testing.assert_frame_equal(result_df, expected_df)
+
+        pd.testing.assert_frame_equal(actual_df, expected_df)
 
     def test_close_conn(self):
         self.db.close_conn()

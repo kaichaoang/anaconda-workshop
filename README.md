@@ -27,6 +27,11 @@ poetry run python -m src.main --all
 poetry run pytest
 ```
 
+### ⚙️ Run ruff check with auto fix
+```
+poetry run ruff check --fix
+```
+
 ### ✅ Answers
 1. Tools to achieve production level:
     - Production grade database (currently running in sqlite), datasets will expect to be massive

@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
 
-from src.constants import file_identifier_regex_map
+import src.constants as const
 
 
 def read_sql_file(file_path: str) -> str:
@@ -20,7 +20,7 @@ def read_csv_to_df(filepath: str) -> pd.DataFrame:
 def extract_fund_and_date(filename: str) -> Tuple[Optional[str], Optional[str]]:
     extracted_fund, extracted_date = None, None
 
-    for fund, pattern in file_identifier_regex_map.items():
+    for fund, pattern in const.file_identifier_regex_map.items():
         match = pattern["file_regex"].match(filename)
         if match:
             extracted_date = match.group(1)
@@ -30,7 +30,7 @@ def extract_fund_and_date(filename: str) -> Tuple[Optional[str], Optional[str]]:
     return extracted_fund, extracted_date
 
 def standardize_datetime(fund: str, date_str: str) -> str:
-    raw_date_format = file_identifier_regex_map[fund]["raw_date_format"]
+    raw_date_format = const.file_identifier_regex_map[fund]["raw_date_format"]
     date_obj = datetime.strptime(date_str, raw_date_format)
     standardized_date = date_obj.strftime("%Y-%m-%d")
 

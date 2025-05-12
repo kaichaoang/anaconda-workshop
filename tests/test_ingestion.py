@@ -20,14 +20,14 @@ class TestBulkIngest(unittest.TestCase):
     def test_bulk_ingest(self):
         bulk_ingest(self.db, source_folder=self.ingest_dir.name)
 
-        result_df = self.db.fetch_as_df(f"SELECT * FROM {const.raw_external_funds_table};")
-        pd.testing.assert_frame_equal(result_df, self.mock_bulk_ingest_df)
+        actual_df = self.db.fetch_as_df(f"SELECT * FROM {const.raw_external_funds_table};")
+        pd.testing.assert_frame_equal(actual_df, self.mock_bulk_ingest_df)
 
     def test_ingest(self):
         ingest(self.mock_csv_path_belaware, "Belaware.31_10_2023.csv", self.db)
 
-        result_df = self.db.fetch_as_df(f"SELECT * FROM {const.raw_external_funds_table} as ef WHERE ef.'FUND NAME' = 'Belaware';")
-        pd.testing.assert_frame_equal(result_df, self.mock_data_belaware_df)
+        actual_df = self.db.fetch_as_df(f"SELECT * FROM {const.raw_external_funds_table} as ef WHERE ef.'FUND NAME' = 'Belaware';")
+        pd.testing.assert_frame_equal(actual_df, self.mock_data_belaware_df)
 
     def tearDown(self):
         self.db.close_conn()

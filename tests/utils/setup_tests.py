@@ -4,6 +4,7 @@ import tempfile
 import pandas as pd
 
 from src.database import SQLiteDatabase
+from src.setup import setup_logging, setup_pandas_config
 from src.sql_templates import setup_ingestion_table_query
 from tests.utils.mock_data import (
     get_mock_data_applebead,
@@ -28,6 +29,9 @@ def setup_test_environment():
     # Setup mock fund data ingestion
     mock_bulk_ingest_df = pd.concat([mock_data_applebead_df, mock_data_belaware_df], ignore_index=True)
     db.execute_script(setup_ingestion_table_query())
+
+    setup_pandas_config()
+    setup_logging()
 
     return {
         'db': db,
